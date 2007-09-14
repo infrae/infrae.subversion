@@ -11,7 +11,7 @@ class Recipe:
         self.urls = [l.split() for l in options['urls'].splitlines()
                      if l.strip()]
         
-        self.export = eval(options.get('export', 'False').strip())
+        self.export = options.get('export', 'False').strip() == 'True'
         self.newest = (
             buildout['buildout'].get('offline', 'false') == 'false'
             and
@@ -39,3 +39,7 @@ class Recipe:
                 url,
                 os.path.join(self.location, name))) == 0
         return self.location
+
+def uninstall(name, options):
+    if options.get('export', 'False').strip() != 'True':
+        os.system("svn st %s/*" % options['location'])
