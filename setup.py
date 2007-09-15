@@ -6,7 +6,7 @@ setup(
     name = name,
     version="1.0",
     author="Eric Casteleijn, Guido Wesdorp and Daniel Nouri",
-    author_email="crew@infrae.com",
+    author_email="info@infrae.com",
     description="Buildout recipe for checking out from subversion",
     long_description=open('README.txt').read(),
     license="ZPL 2.1",
