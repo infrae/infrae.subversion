@@ -14,8 +14,8 @@ This is an example buildout part that uses this recipe::
         https://svn.plone.org/svn/collective/PDBDebugMode/trunk PDBDebugMode
 
 This will maintain a working copy of ``PDBDebugMode`` in the
-``parts/development-products/PDBDebugMode`` directory and *not* in the
-parts directory itself.  The recipe handles multiple URLs fine.
+``parts/development-products/PDBDebugMode`` directory (*not* in the
+parts directory itself).  Thus, the recipe handles multiple URLs fine.
 
 For an example buildout that uses this recipe, please see the `Silva
 buildout <https://svn.infrae.com/buildout/silva/trunk>`_.
