@@ -152,13 +152,18 @@ def uninstall(name, options):
 In '%s':
 local modifications detected while uninstalling %r: Uninstall aborted!
 
-If you sure that these can be ignored, remove this directory manually:
-parts/%s
+Please check for local modifications and make sure these are checked
+in.
 
-Or better, add it to the 'svn:ignore' property of the file's container
-directory.  Alternatively, add an ignore glob pattern to your
-subversion client's 'global-ignores' configuration variable.
-""" % (fpath, name, name))
+If you sure that these modifications can be ignored, remove the
+checkout manually:
+
+  rm -rf %s
+
+Or if applicable, add the file to the 'svn:ignore' property of the
+file's container directory.  Alternatively, add an ignore glob pattern
+to your subversion client's 'global-ignores' configuration variable.
+""" % (fpath, name, wc.strpath))
 
 if __name__ == '__main__':
     import doctest

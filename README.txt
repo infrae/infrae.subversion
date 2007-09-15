@@ -17,5 +17,8 @@ This will maintain a working copy of ``PDBDebugMode`` in the
 ``parts/development-products/PDBDebugMode`` directory and *not* in the
 parts directory itself.  The recipe handles multiple URLs fine.
 
+For an example buildout that uses this recipe, please see the `Silva
+buildout <https://svn.infrae.com/buildout/silva/trunk>`_.
+
 The latest version is available in a `Subversion repository
-<https://svn.infrae.com/buildout/infrae.subversion/trunk#egg=infrae.subversion-dev`_.
+<https://svn.infrae.com/buildout/infrae.subversion/trunk#egg=infrae.subversion-dev>`_.
