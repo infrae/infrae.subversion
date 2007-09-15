@@ -16,3 +16,6 @@ This is an example buildout part that uses this recipe::
 This will maintain a working copy of ``PDBDebugMode`` in the
 ``parts/development-products/PDBDebugMode`` directory and *not* in the
 parts directory itself.  The recipe handles multiple URLs fine.
+
+The latest version is available in a `Subversion repository
+<https://svn.infrae.com/buildout/infrae.subversion/trunk#egg=infrae.subversion-dev`_.
