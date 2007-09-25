@@ -11,6 +11,9 @@ setup(
     long_description=open('README.txt').read(),
     license="ZPL 2.1",
     keywords="subversion buildout",
+    classifiers=[
+        "Framework :: Buildout",
+    ],
     packages=find_packages(),
     namespace_packages = ['infrae'],
     install_requires = ['zc.buildout', 'setuptools', 'py'],
