@@ -98,7 +98,7 @@ def uninstall(name, options):
       >>> uninstall('test', {'location': wc.strpath}) # doctest: +ELLIPSIS
       >>> ignore = package.propdel('svn:ignore')
 
-    If we were to put 'bar.py' into the 'svn:ingore' property, uninstall 
+    If we were to put 'bar.py' into the 'svn:ignore' property, uninstall 
 
     Let's add 'bar.py'.  This should still fail, because 'bar.py'
     isn't committed yet:
@@ -128,6 +128,30 @@ def uninstall(name, options):
       local modifications detected while uninstalling 'test': Uninstall aborted!
       ...
 
+    Then another commit makes it go away again:
+
+      >>> rev3 = package.commit()
+      >>> rev3 == rev2 + 1
+      True
+      >>> uninstall('test', {'location': wc.strpath})
+
+    When 'svn:ignore' is set to ignore a directory, we should not
+    descend into that directory when visiting:
+
+      >>> build_dir = os.path.join(package.strpath, 'build')
+      >>> os.mkdir(build_dir)
+      >>> open(os.path.join(build_dir, 'boo.txt'), 'wb').write('booey')
+      >>> uninstall('test', {'location': wc.strpath}) # doctest: +ELLIPSIS
+      Traceback (most recent call last):
+      ...
+      ValueError: In '.../package/build':
+      local modifications detected while uninstalling 'test': Uninstall aborted!
+      ...
+
+      >>> package.propset('svn:ignore', 'build')
+      >>> uninstall('test', {'location': wc.strpath}) # doctest: +ELLIPSIS
+      >>> ignore = package.propdel('svn:ignore')
+
     If our location doesn't exist, nothing will happen:
 
       >>> uninstall('test', {'location': 'no way'})
@@ -142,13 +166,16 @@ def uninstall(name, options):
         # The path doesn't exist anyway, nothing to preserve
         return
     
-    for fpath in wc.visit():
+    def not_ignored(fpath):
         status = fpath.status()
-        if not status.ignored:
-            changed = fpath.check(versioned=False)
-            changed = changed or not status.unchanged
-            if changed:
-                raise ValueError("""\
+        return not status.ignored
+
+    for fpath in wc.visit(fil=not_ignored, rec=not_ignored):
+        changed = fpath.check(versioned=False)
+        if not changed:
+            changed = not fpath.status().unchanged
+        if changed:
+            raise ValueError("""\
 In '%s':
 local modifications detected while uninstalling %r: Uninstall aborted!
 
