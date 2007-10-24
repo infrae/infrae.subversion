@@ -42,10 +42,11 @@ class Recipe:
         """
         for (url, name) in self.urls:
             wc = py.path.svnwc(self.location).join(name)
-            if self.export:
-                wc.export(url)
-            else:
-                wc.checkout(url)
+            # unfortunately the py lib doesn't do export. Sigh
+            #if self.export:
+            #    wc.export(url)
+            #else:
+            wc.checkout(url)
         return self.location
 
 def uninstall(name, options):
