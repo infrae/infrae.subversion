@@ -15,7 +15,7 @@ class Recipe:
         self.urls = [l.split()
                      for l in options['urls'].splitlines()
                      if l.strip()]
-        
+        self.export = options.get('export')
         self.newest = (
             buildout['buildout'].get('offline', 'false') == 'false'
             and
@@ -42,7 +42,10 @@ class Recipe:
         """
         for (url, name) in self.urls:
             wc = py.path.svnwc(self.location).join(name)
-            wc.checkout(url)
+            if self.export:
+                wc.export(url)
+            else:
+                wc.checkout(url)
         return self.location
 
 def uninstall(name, options):
