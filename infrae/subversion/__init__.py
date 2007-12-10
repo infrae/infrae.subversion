@@ -10,7 +10,7 @@ class Recipe:
         self.name = name
         self.options = options
         
-        self.location = os.path.join(
+        options['location'] = self.location = os.path.join(
             buildout['buildout']['parts-directory'], self.name)
         self.urls = [l.split()
                      for l in options['urls'].splitlines()
