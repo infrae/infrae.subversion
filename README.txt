@@ -29,7 +29,7 @@ buildout <https://svn.infrae.com/buildout/silva/trunk>`_.
 Export
 ------
 
-With ``pysvn`` installed, you can specify:
+With ``pysvn`` installed, you can specify::
 
    export = True
 
