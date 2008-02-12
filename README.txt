@@ -17,7 +17,7 @@ This will maintain a working copy of ``PDBDebugMode`` in the
 ``parts/development-products/PDBDebugMode`` directory (*not* in the
 parts directory itself).  Thus, the recipe handles multiple URLs fine.
 
-If you have pysvn installed on the computer, it will be use. This
+If you have ``pysvn`` installed on the computer, it will be use. This
 implies better performances.
 
 Sample
@@ -29,7 +29,7 @@ buildout <https://svn.infrae.com/buildout/silva/trunk>`_.
 Export
 ------
 
-With pysvn installed, you can specify:
+With ``pysvn`` installed, you can specify:
 
    export = True
 
