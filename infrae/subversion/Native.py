@@ -4,6 +4,23 @@ import pysvn
 
 import os
 
+def createSVNClient():
+    """Create a pysvn client, and setup some callback and options.
+    """
+
+    def callback_ssl(info):
+        print "-------- SECURITY WARNING --------"
+        print "There is no valid SSL certificat for %s." % info['realm']
+        print "Check that the files are correct after being fetched."
+        print "-------- SECURITY WARNING --------"
+        return True, 0, False
+
+    client = pysvn.Client()
+    client.set_interactive(True)
+    client.callback_ssl_server_trust_prompt = callback_ssl
+
+    return client
+
 class Recipe:
 
     def __init__(self, buildout, name, options):
@@ -23,10 +40,8 @@ class Recipe:
             buildout['buildout'].get('newest', 'true') == 'true'
             )
 
-        self.client = pysvn.Client()
-        self.client.set_interactive(True) # Let buildout ask for
-                                          # password/for SSL
-                                          # certificate
+        self.client = createSVNClient()
+        self.verbose = buildout['buildout'].get('verbosity', 0)
 
     def update(self):
         """Update the checkouts.
@@ -40,6 +55,8 @@ class Recipe:
 
         for (_, name) in self.urls:
             path = os.path.join(self.location, name)
+            if self.verbose:
+                print "Updating %s" % path
             self.client.update(path)
             
         return self.location
@@ -52,6 +69,9 @@ class Recipe:
 
         for (url, name) in self.urls:
             path = os.path.join(self.location, name)
+            if self.verbose:
+                print "%s %s to %s" % (self.export and 'Export' or 'Fetch', url, path)
+
             if self.export:
                 self.client.export(url, path, recurse=True)
             else:
@@ -180,8 +200,7 @@ def uninstall(name, options):
     #     'buildout:parts-directory'.
     location = options.get('location', os.path.join('.', 'parts', name))
 
-    client = pysvn.Client()
-    client.set_interactive(True)
+    client = createSVNClient()
 
     bad_svn_status = [wc_status_kind.modified, 
                       wc_status_kind.missing,
