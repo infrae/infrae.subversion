@@ -24,7 +24,7 @@ Update
 ------
 
 By default, when buildout update the part, an ``svn up`` is done for
-each link. However, when a revision number is specified like this:
+each link. However, when a revision number is specified like this::
 
    https://svn.infrae.com/buildout/infrae.subversion/trunk@27829
 
