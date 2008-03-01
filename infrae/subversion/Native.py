@@ -92,16 +92,25 @@ class Recipe:
             
         return self.location
 
+    def _parseRevisionInUrl(url):
+        num_release = re.compile('(.*)@([0-9]+)$')
+        match = num_release.match(url)
+        if match:
+            return (match.group(1),
+                    pysvn.Revision(pysvn.opt_revision_kind.number, int(match.group(2))))
+        return (url, None)
 
     def _installPath(self, link, path):
         """Checkout a single entry.
         """
         if self.verbose:
             print "%s %s to %s" % (self.export and 'Export' or 'Fetch', link, path)
+            
+        link, revision = self._parseRevisionInUrl(link)
         if self.export:
-            self.client.export(link, path, recurse=True)
+            self.client.export(link, path, revision=revision, recurse=True)
         else:
-            self.client.checkout(link, path, recurse=True)
+            self.client.checkout(link, path, revision=revision, recurse=True)
 
 
     def install(self):
