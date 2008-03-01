@@ -16,6 +16,8 @@ setup(
     ],
     packages=find_packages(),
     namespace_packages = ['infrae'],
+    test_suite = 'infrae.subversion.tests',
+    tests_require = ['svnhelper', 'zc.buildout', 'zope.testing', 'setuptools', 'py',],
     install_requires = ['zc.buildout', 'setuptools', 'py'],
     entry_points = {
         'zc.buildout': ['default = %s:Recipe' % name],

@@ -23,6 +23,8 @@ class Recipe:
             and
             buildout['buildout'].get('newest', 'true') == 'true'
             )
+        self.verbose = buildout['buildout'].get('verbosity', 0)
+
 
     def update(self):
         """Update the checkouts.
