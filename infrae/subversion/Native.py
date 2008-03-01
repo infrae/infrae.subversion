@@ -97,7 +97,7 @@ class Recipe:
         """Checkout a single entry.
         """
         if self.verbose:
-            print "%s %s to %s" % (self.export and 'Export' or 'Fetch', url, path)
+            print "%s %s to %s" % (self.export and 'Export' or 'Fetch', link, path)
         if self.export:
             self.client.export(link, path, recurse=True)
         else:
