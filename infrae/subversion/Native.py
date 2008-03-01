@@ -246,12 +246,13 @@ def uninstall(name, options):
     if not checkExistPath(location):
         return
 
-    for path in os.listdir(location):
+    for sub_path in os.listdir(location):
+        path = os.path.join(location, sub_path)
         if not checkExistPath(path):
             continue
 
         badfiles = filter(lambda e: e['text_status'] in bad_svn_status, 
-                          client.status(os.path.join(location, path)))
+                          client.status(path))
     
         if badfiles:
             raise ValueError("""\
