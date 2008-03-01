@@ -47,7 +47,7 @@ class Recipe:
                 continue
             wc = py.path.svnwc(self.location).join(sub_path)
             if self.verbose:
-                print "Updating %s" % path
+                print "Updating %s" % link
             wc.update()
         return self.location
 
