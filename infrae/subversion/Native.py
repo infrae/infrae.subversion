@@ -92,7 +92,7 @@ class Recipe:
             
         return self.location
 
-    def _parseRevisionInUrl(url):
+    def _parseRevisionInUrl(self, url):
         num_release = re.compile('(.*)@([0-9]+)$')
         match = num_release.match(url)
         if match:
