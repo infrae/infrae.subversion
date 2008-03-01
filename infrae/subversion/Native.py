@@ -30,7 +30,7 @@ def checkExistPath(path):
     if not status:
         print "-------- WARNING --------"
         print "Directory %s have been removed." % os.path.abspath(path)
-        print "Some changes might be lost."
+        print "Changes might be lost."
         print "-------- WARNING --------"
     return status
 
