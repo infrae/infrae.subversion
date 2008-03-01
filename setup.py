@@ -13,6 +13,8 @@ setup(
     keywords="subversion buildout",
     classifiers=[
         "Framework :: Buildout",
+        "License :: OSI Approved :: Zope Public License",
+        "Topic :: Software Development :: Version Control",
     ],
     packages=find_packages(),
     namespace_packages = ['infrae'],
