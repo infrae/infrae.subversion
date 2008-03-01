@@ -93,12 +93,16 @@ class Recipe:
         return self.location
 
     def _parseRevisionInUrl(self, url):
+        """Parse URL to extract revision number. This is not done by
+        pysvn, so we have to do it by ourself.
+        """
         num_release = re.compile('(.*)@([0-9]+)$')
         match = num_release.match(url)
         if match:
             return (match.group(1),
                     pysvn.Revision(pysvn.opt_revision_kind.number, int(match.group(2))))
-        return (url, None)
+        return (url, pysvn.Revision(pysvn.opt_revision_kind.head))
+
 
     def _installPath(self, link, path):
         """Checkout a single entry.
