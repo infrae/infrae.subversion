@@ -2,7 +2,8 @@
 from pysvn import wc_status_kind
 import pysvn
 
-import os
+import os, os.path
+import re
 
 def createSVNClient():
     """Create a pysvn client, and setup some callback and options.
@@ -22,6 +23,8 @@ def createSVNClient():
     return client
 
 class Recipe:
+    """infrae.subversion recipe.
+    """
 
     def __init__(self, buildout, name, options):
         self.buildout = buildout
@@ -52,9 +55,16 @@ class Recipe:
             return self.location
         if self.export:
             return self.location
+        if self.options.get('ignore_updates', False):
+            return self.location
 
-        for (_, name) in self.urls:
-            path = os.path.join(self.location, name)
+        num_release = re.compile('.*@[0-9]+$')
+        for link, sub_path in self.urls:
+            if num_release.match(link):
+                if self.verbose:
+                    print "Given num release for %s, skipping." % link
+                continue
+            path = os.path.join(self.location, sub_path)
             if self.verbose:
                 print "Updating %s" % path
             self.client.update(path)
@@ -207,6 +217,12 @@ def uninstall(name, options):
                       wc_status_kind.unversioned, ]
 
     for path in os.listdir(location):
+        if not os.path.exists(path):
+            print "-------- WARNING --------"
+            print "Directory %s have been removed before." % os.path.absdir(path)
+            print "Some changes might be lost."
+            print "-------- WARNING --------"
+            continue
 
         badfiles = filter(lambda e: e['text_status'] in bad_svn_status, 
                           client.status(os.path.join(location, path)))

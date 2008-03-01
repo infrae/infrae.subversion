@@ -1,9 +1,11 @@
-import os
-import sys
+
+import os, sys, re
 
 import py
 
 class Recipe:
+    """infrae.subversion recipe.
+    """
 
     def __init__(self, buildout, name, options):
         self.buildout = buildout
@@ -31,10 +33,19 @@ class Recipe:
             return self.location
         if self.export:
             return self.location
+        if self.options.get('ignore_updates', False):
+            return self.location
 
+        num_release = re.compile('.*@[0-9]+$')
         part = py.path.local(self.location)
-        for (url, name) in self.urls:
-            wc = py.path.svnwc(self.location).join(name)
+        for link, sub_path in self.urls:
+            if num_release.match(link):
+                if self.verbose:
+                    print "Given num release for %s, skipping." % link
+                continue
+            wc = py.path.svnwc(self.location).join(sub_path)
+            if self.verbose:
+                print "Updating %s" % path
             wc.update()
         return self.location
 
@@ -47,6 +58,8 @@ class Recipe:
             wc = py.path.svnwc(self.location).join(name)
             if self.export:
                 raise Exception('Unimplemented feature')
+            if self.verbose:
+                print "Fetch %s" % url
             wc.checkout(url)
         return self.location
 
