@@ -22,6 +22,19 @@ def createSVNClient():
 
     return client
 
+
+def checkExistPath(path):
+    """Check that a path exist.
+    """
+    status = os.path.exists(path)
+    if not status:
+        print "-------- WARNING --------"
+        print "Directory %s have been removed before." % os.path.absdir(path)
+        print "Some changes might be lost."
+        print "-------- WARNING --------"
+    return status
+
+
 class Recipe:
     """infrae.subversion recipe.
     """
@@ -55,21 +68,41 @@ class Recipe:
             return self.location
         if self.export:
             return self.location
-        if self.options.get('ignore_updates', False):
-            return self.location
 
         num_release = re.compile('.*@[0-9]+$')
         for link, sub_path in self.urls:
+            path = os.path.join(self.location, sub_path)
+            if not checkExistPath(path):
+                if self.verbose:
+                    print "Entry %s deleted, checkout a new version ..." % link
+                self._installPath(link, path)
+                continue
+
+            if self.options.get('ignore_updates', False):
+                continue
+            
             if num_release.match(link):
                 if self.verbose:
                     print "Given num release for %s, skipping." % link
                 continue
-            path = os.path.join(self.location, sub_path)
+
             if self.verbose:
                 print "Updating %s" % path
             self.client.update(path)
             
         return self.location
+
+
+    def _installPath(self, link, path):
+        """Checkout a single entry.
+        """
+        if self.verbose:
+            print "%s %s to %s" % (self.export and 'Export' or 'Fetch', url, path)
+        if self.export:
+            self.client.export(link, path, recurse=True)
+        else:
+            self.client.checkout(link, path, recurse=True)
+
 
     def install(self):
         """Checkout the checkouts.
@@ -77,15 +110,9 @@ class Recipe:
         Fails if buildout is running in offline mode.
         """
 
-        for (url, name) in self.urls:
-            path = os.path.join(self.location, name)
-            if self.verbose:
-                print "%s %s to %s" % (self.export and 'Export' or 'Fetch', url, path)
-
-            if self.export:
-                self.client.export(url, path, recurse=True)
-            else:
-                self.client.checkout(url, path, recurse=True)
+        for link, sub_path in self.urls:
+            path = os.path.join(self.location, sub_path)
+            self._installPath(link, path)
 
         return self.location
 
@@ -216,12 +243,11 @@ def uninstall(name, options):
                       wc_status_kind.missing,
                       wc_status_kind.unversioned, ]
 
+    if not checkExistPath(location):
+        return
+
     for path in os.listdir(location):
-        if not os.path.exists(path):
-            print "-------- WARNING --------"
-            print "Directory %s have been removed before." % os.path.absdir(path)
-            print "Some changes might be lost."
-            print "-------- WARNING --------"
+        if not checkExistPath(path):
             continue
 
         badfiles = filter(lambda e: e['text_status'] in bad_svn_status, 
