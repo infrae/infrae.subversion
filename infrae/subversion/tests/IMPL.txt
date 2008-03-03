@@ -1,9 +1,219 @@
 
-Create buildout using infrae.subversion:
+Test for infrae.subversion
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Checking out SVN links
+----------------------
+
+Create buildout using infrae.subversion::
 
   >>> cd(sample_buildout)
+  >>> write('buildout.cfg','''
+  ... [buildout]
+  ... parts = svnpart
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... urls = 
+  ...    %s/my.testing/trunk my.testing
+  ... ''' % repository)
+
+And run buildout::
+
+  >>> print system(buildout)
+  Installing svnpart.
+
+We get a part with a checkout of the SVN::
+
+  >>> ls('parts')
+  d  svnpart
+  >>> ls('parts/svnpart')
+  d  my.testing
+  >>> ls('parts/svnpart/my.testing')
+  d  .svn
+  -  LICENSE
+  d  my
+  -  setup.py
 
 
+Modification
+------------
 
-  
+If we add a file, and run the recipe, this is ok::
 
+  >>> write('parts/svnpart/my.testing/file.txt', '''
+  ... Sample file
+  ... ''')
+  >>> print system(buildout)
+  Updating svnpart.
+
+But if we change the configuration file, to add a new link for
+example, the part will be reinstalled::
+
+  >>> write('buildout.cfg','''
+  ... [buildout]
+  ... parts = svnpart
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... urls = 
+  ...    %s/my.testing/trunk my.testing
+  ...    %s/infrae.subversion/trunk infrae.subversion
+  ... ''' % (repository, repository))
+
+And re-run buildout, you will get an error because of this file:
+
+  >>> print system(buildout)
+  Uninstalling svnpart.
+  Running uninstall recipe.
+  While:
+    Installing.
+    Uninstalling svnpart.
+  An internal error occured due to a bug in either zc.buildout or in a
+  recipe being used:
+  <BLANKLINE>
+  ValueError:
+  In '/.../sample-buildout/parts/svnpart/my.testing':
+  local modifications detected while uninstalling 'svnpart': Uninstall aborted!
+  <BLANKLINE>
+  Please check for local modifications and make sure these are checked in.
+  <BLANKLINE>
+  If you sure that these modifications can be ignored, remove the
+  checkout manually:
+  <BLANKLINE>
+    rm -rf /.../sample-buildout/parts/svnpart/my.testing/file.txt
+  <BLANKLINE>
+  Or if applicable, add the file to the 'svn:ignore' property of the
+  file's container directory.  Alternatively, add an ignore glob pattern
+  to your subversion client's 'global-ignores' configuration variable.
+
+
+You can delete it::
+
+  >>> remove('parts/svnpart/my.testing/file.txt')
+
+And, if you edit a file, you get the same error::
+
+  >>> write('parts/svnpart/my.testing/setup.py', '''
+  ... Very bad edition
+  ... ''')
+  >>> print system(buildout)
+  Uninstalling svnpart.
+  Running uninstall recipe.
+  While:
+    Installing.
+    Uninstalling svnpart.
+  An internal error occured due to a bug in either zc.buildout or in a
+  recipe being used:
+  <BLANKLINE>
+  ValueError:
+  In '/.../sample-buildout/parts/svnpart/my.testing':
+  local modifications detected while uninstalling 'svnpart': Uninstall aborted!
+  <BLANKLINE>
+  Please check for local modifications and make sure these are checked in.
+  <BLANKLINE>
+  If you sure that these modifications can be ignored, remove the
+  checkout manually:
+  <BLANKLINE>
+    rm -rf /.../sample-buildout/parts/svnpart/my.testing/setup.py
+  <BLANKLINE>
+  Or if applicable, add the file to the 'svn:ignore' property of the
+  file's container directory.  Alternatively, add an ignore glob pattern
+  to your subversion client's 'global-ignores' configuration variable.
+
+I remove the checkout, I got a warning, but everything is ok::
+
+  >>> rmdir('parts/svnpart')
+  >>> print system(buildout)
+  Uninstalling svnpart.
+  Running uninstall recipe.
+  -------- WARNING --------
+  Directory /.../sample-buildout/parts/svnpart have been removed.
+  Changes might be lost.
+  -------- WARNING --------
+  Installing svnpart.
+
+There is a new checkout of ``my.testing``, and an for ``infrae.subversion``::
+
+  >>> ls('parts/svnpart')
+  d  infrae.subversion
+  d  my.testing
+  >>> ls('parts/svnpart/my.testing')
+  d  .svn
+  -  LICENSE
+  d  my
+  -  setup.py
+
+Now, if you delete a directory, and do an update, this one is
+re-checkout::
+
+  >>> rmdir('parts/svnpart/infrae.subversion')
+  >>> ls('parts/svnpart')
+  d  my.testing
+  >>> print system(buildout)
+  Updating svnpart.
+  -------- WARNING --------
+  Directory /.../sample-buildout/parts/svnpart/infrae.subversion have been removed.
+  Changes might be lost.
+  -------- WARNING --------
+  >>> ls('parts/svnpart')
+  d  infrae.subversion
+  d  my.testing
+
+
+Export
+------
+
+The recipe support export feature, in this case, we got an export::
+
+  >>> write('buildout.cfg','''
+  ... [buildout]
+  ... parts = svnpart
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... export = true
+  ... urls = 
+  ...    %s/my.testing/trunk my.testing
+  ... ''' % repository)
+
+Re-run buildout, and check the output::
+
+  >>> print system(buildout)
+  Uninstalling svnpart.
+  Running uninstall recipe.
+  Installing svnpart.
+  >>> ls('parts/svnpart')
+  d  my.testing
+  >>> ls('parts/svnpart/my.testing')
+  -  LICENSE
+  d  my
+  -  setup.py
+
+(There is no ``.svn`` directory in the parts).
+
+If I delete the directory, it's recreated::
+
+  >>> rmdir('parts/svnpart/my.testing')
+  >>> print system(buildout)
+  Updating svnpart.
+  -------- WARNING --------
+  Directory /.../sample-buildout/parts/svnpart/my.testing have been removed.
+  Changes might be lost.
+  -------- WARNING --------
+  >>> ls('parts/svnpart')
+  d  my.testing
+  >>> ls('parts/svnpart/my.testing')
+  -  LICENSE
+  d  my
+  -  setup.py
+
+
+Bad SSL certificate
+-------------------
+
+Usually, bad SSL certificate make command using SVN fails. That's a
+good point, since you may be a victim of a spoofing attack. But that's
+boring as well, because a lot of site don't use valid certificate, and
+make fails the program useless you do a checkout in ``/tmp`` before,
+in order to accept the certificate.
