@@ -49,6 +49,7 @@ Sample
 For an example buildout that uses this recipe, please see the `Silva
 buildout <https://svn.infrae.com/buildout/silva/trunk>`_.
 
+As well, the doctest file (infrae/subversion/tests/IMPL.txt) can provide more sample.
 
 Latest version
 --------------
