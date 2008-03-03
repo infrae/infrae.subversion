@@ -41,7 +41,8 @@ Modification
 
 If we add a file, and run the recipe, this is ok::
 
-  >>> write('parts/svnpart/my.testing/file.txt', '''
+  >>> cd(sample_buildout)
+  >>> write('parts/svnpart/my.testing/README.txt', '''
   ... Sample file
   ... ''')
   >>> print system(buildout)
@@ -81,7 +82,7 @@ And re-run buildout, you will get an error because of this file:
   If you sure that these modifications can be ignored, remove the
   checkout manually:
   <BLANKLINE>
-    rm -rf /.../sample-buildout/parts/svnpart/my.testing/file.txt
+    rm -rf /.../sample-buildout/parts/svnpart/my.testing/README.txt
   <BLANKLINE>
   Or if applicable, add the file to the 'svn:ignore' property of the
   file's container directory.  Alternatively, add an ignore glob pattern
@@ -90,7 +91,7 @@ And re-run buildout, you will get an error because of this file:
 
 You can delete it::
 
-  >>> remove('parts/svnpart/my.testing/file.txt')
+  >>> remove('parts/svnpart/my.testing/README.txt')
 
 And, if you edit a file, you get the same error::
 
@@ -161,11 +162,21 @@ re-checkout::
   d  my.testing
 
 
+Revision number
+---------------
+
+We're going to create a revision:
+  
+
+  TODO
+   
+
 Export
 ------
 
 The recipe support export feature, in this case, we got an export::
 
+  >>> cd(sample_buildout)
   >>> write('buildout.cfg','''
   ... [buildout]
   ... parts = svnpart
