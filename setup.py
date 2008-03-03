@@ -9,6 +9,7 @@ setup(
     author_email="info@infrae.com",
     description="Buildout recipe for checking out from subversion",
     long_description=open('README.txt').read(),
+    url="https://svn.infrae.com/buildout/infrae.buildout/trunk/",
     license="ZPL 2.1",
     keywords="subversion buildout",
     classifiers=[
