@@ -2,7 +2,7 @@
 Test for infrae.subversion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This test suite works for the Native implementation.
+This test suite works for the Native (with pysvn) implementation.
 
 Checking out SVN links
 ----------------------
