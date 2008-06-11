@@ -23,6 +23,10 @@ Create buildout using infrae.subversion::
 And run buildout::
 
   >>> print system(buildout)
+  Upgraded:
+    zc.buildout version ...;
+  restarting.
+  Generated script '/.../bin/buildout'.
   Installing svnpart.
 
 We get a part with a checkout of the SVN::

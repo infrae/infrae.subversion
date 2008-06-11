@@ -1,3 +1,5 @@
+# Copyright (c) 2007-2008 Infrae. All rights reserved.
+# $Id$
 
 import os, sys, re
 

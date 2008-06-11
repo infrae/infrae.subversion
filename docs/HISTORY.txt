@@ -1,0 +1,12 @@
+Changes
+-------
+
+1.1
+~~~
+
+- FIXME
+
+1.0
+~~~
+
+- Base version of the recipe.

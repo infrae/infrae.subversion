@@ -1,3 +1,5 @@
+# Copyright (c) 2007-2008 Infrae. All rights reserved.
+# $Id$
 
 from pysvn import wc_status_kind
 import pysvn
@@ -100,7 +102,8 @@ class Recipe:
         match = num_release.match(url)
         if match:
             return (match.group(1),
-                    pysvn.Revision(pysvn.opt_revision_kind.number, int(match.group(2))))
+                    pysvn.Revision(pysvn.opt_revision_kind.number,
+                                   int(match.group(2))))
         return (url, pysvn.Revision(pysvn.opt_revision_kind.head))
 
 
@@ -108,7 +111,8 @@ class Recipe:
         """Checkout a single entry.
         """
         if self.verbose:
-            print "%s %s to %s" % (self.export and 'Export' or 'Fetch', link, path)
+            print "%s %s to %s" % (self.export and 'Export' or 'Fetch',
+                                   link, path)
             
         link, revision = self._parseRevisionInUrl(link)
         if self.export:
@@ -147,7 +151,7 @@ def uninstall(name, options):
     #     options['buildout'] available so no
     #     'buildout:parts-directory'.
     location = options.get('location', os.path.join('.', 'parts', name))
-
+    
     client = createSVNClient()
 
     bad_svn_status = [wc_status_kind.modified, 

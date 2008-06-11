@@ -1,3 +1,6 @@
+# Copyright (c) 2007-2008 Infrae. All rights reserved.
+# $Id$
+
 try:
     # Try to use a native binding, use native SVN.
     import Native
