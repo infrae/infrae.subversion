@@ -146,6 +146,9 @@ def uninstall(name, options):
     if bool(options.get('export', False)):
         return                  # SVN Export, there is nothing to check.
 
+    if bool(options.get('ignore_verification', False)):
+        return                  # Verification disabled.
+
     # XXX This makes the assumption that we're in the buildout
     #     directory and that our part is in 'parts'.  We don't have
     #     options['buildout'] available so no

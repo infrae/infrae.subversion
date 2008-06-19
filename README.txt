@@ -43,6 +43,16 @@ With ``pysvn`` installed, you can specify::
 
 in your buildout part to get an SVN export instead of an SVN checkout.
 
+Verification
+------------
+
+By default, your checkout are checked against local modification
+before any uninstallation step. This can take time on large checkouts,
+and you may don't want it in some case (like when used on buildbot for
+instance). To prevent it this step, you can use this option::
+
+  ignore_verification = true
+
 Sample
 ------
 

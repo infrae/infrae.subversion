@@ -23,10 +23,6 @@ Create buildout using infrae.subversion::
 And run buildout::
 
   >>> print system(buildout)
-  Upgraded:
-    zc.buildout version ...;
-  restarting.
-  Generated script '/.../bin/buildout'.
   Installing svnpart.
 
 We get a part with a checkout of the SVN::
@@ -63,6 +59,7 @@ example, the part will be reinstalled::
   ...
   ... [svnpart]
   ... recipe = infrae.subversion
+  ... ignore_verification = true
   ... urls = 
   ...    %s/my.testing/trunk my.testing
   ...    %s/infrae.subversion/trunk infrae.subversion
@@ -166,6 +163,34 @@ re-checkout::
   >>> ls('parts/svnpart')
   d  infrae.subversion
   d  my.testing
+
+
+We can use the ``ignore_verification`` option to prevent
+verification. Note: it have to been used when using the same
+configuration for installation, since it's this one which is used for
+uninstall, and not the new one. So here, we juste remove this option
+to change the configuration::
+
+  >>> write('buildout.cfg','''
+  ... [buildout]
+  ... parts = svnpart
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... urls = 
+  ...    %s/my.testing/trunk my.testing
+  ...    %s/infrae.subversion/trunk infrae.subversion
+  ... ''' % (repository, repository))
+
+Edit a file, and re-run buildout::
+
+  >>> write('parts/svnpart/my.testing/README.txt', '''
+  ... Sample changed file
+  ... ''')
+  >>> print system(buildout)
+  Uninstalling svnpart.
+  Running uninstall recipe.
+  Installing svnpart.
 
 
 Revision number

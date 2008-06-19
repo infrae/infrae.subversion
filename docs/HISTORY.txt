@@ -4,7 +4,7 @@ Changes
 1.1
 ~~~
 
-- FIXME
+- Add the ``ignore_verification`` option.
 
 1.0
 ~~~
