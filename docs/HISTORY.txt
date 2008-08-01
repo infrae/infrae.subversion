@@ -14,7 +14,7 @@ Changes
 - Uninstall only look at directory which have been created by the
   recipe in the part. Other are just reported.
 
-- Export two new variables: 
+- Export two new variables, if ``export_info`` is set to true: 
  
   ``revisions``
   

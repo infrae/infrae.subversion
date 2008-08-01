@@ -56,13 +56,21 @@ instance). To prevent this step, you can use this option::
 Exported Variables
 ------------------
 
-Two variables are exported by this recipe:
+If you set::
+
+  export_info = true
+
+Two variables will be exported by this recipe:
 
 - ``revisions`` which gives for each URL the corresponding revision
   number,
 
 - ``updated`` which gives a list of URLs which have been updated with
   new code.
+
+Sinces values to these variables changes each time you run buildout
+(revision number changes), this can trigger an uninstall/reinstall of
+the part. We recommand to activate it only if you need.
 
 Sample
 ------
