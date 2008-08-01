@@ -4,6 +4,13 @@ Changes
 1.2
 ~~~
 
+- Refactor code, performances should be better at uninstall with Py
+  implementation.
+
+- Look for the environment variable ``INFRAE_SUBVERSION_IMPL`` to
+  select which implementation to use. Possible values are ``PYSVN``
+  (default) and ``PY``.
+
 - Uninstall only look at directory which have been created by the
   recipe in the part. Other are just reported.
 
@@ -13,7 +20,7 @@ Changes
   
      Which is lines formatted::
 
-        link revision
+        link current_revision
 
   ``updated``
 
