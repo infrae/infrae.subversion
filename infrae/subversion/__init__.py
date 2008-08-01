@@ -7,8 +7,8 @@ try:
     Recipe = Native.Recipe
     uninstall = Native.uninstall
 except:
-    # Or if the binding is not present, use slow pypi.
-    import PyPi
-    Recipe = PyPi.Recipe
-    uninstall = PyPi.uninstall
+    # Or if the binding is not present, use slow py.
+    import Py
+    Recipe = Py.Recipe
+    uninstall = Py.uninstall
 
