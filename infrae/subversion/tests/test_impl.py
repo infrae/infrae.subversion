@@ -5,6 +5,7 @@ __format__ = "plaintext"
 __version__ = "$Id$"
 
 import unittest
+from doctest import DocFileSuite
 import doctest
 import os, sys
 import os.path
@@ -37,15 +38,34 @@ def tearDown(test):
 flags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE |
          doctest.REPORT_ONLY_FIRST_FAILURE)
 
+def have_pysvn():
+    impl = os.getenv('INFRAE_SUBVERSION_IMPL', 'PYSVN')
+    if impl == 'PYSVN':
+        try:
+            import pysvn
+            return True
+        except:
+            pass
+    return False
+
+def test_file(name):
+    return os.path.join(os.path.dirname(__file__), name)
 
 def test_suite():
-    return unittest.TestSuite([doctest.DocFileSuite(
-        os.path.join(os.path.dirname(__file__), 'IMPL.txt'),
-        optionflags=flags,
-        globs=globals(),
-        setUp=setUp,
-        tearDown=tearDown,
-        module_relative=False)])
+    tests = [DocFileSuite(test_file('IMPL.txt'),
+                          optionflags=flags,
+                          globs=globals(),
+                          setUp=setUp,
+                          tearDown=tearDown,
+                          module_relative=False)]
+    if have_pysvn():
+        tests += [DocFileSuite(test_file('EXPORT.txt'),
+                               optionflags=flags,
+                               globs=globals(),
+                               setUp=setUp,
+                               tearDown=tearDown,
+                               module_relative=False)]
+    return unittest.TestSuite(tests)
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

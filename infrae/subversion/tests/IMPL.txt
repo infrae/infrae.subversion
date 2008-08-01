@@ -1,8 +1,8 @@
-
 Test for infrae.subversion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This test suite works for the Native (with pysvn) implementation.
+This test suite works for both implementations.
+
 
 Checking out SVN links
 ----------------------
@@ -201,55 +201,6 @@ We're going to create a revision:
 
   TODO
    
-
-Export
-------
-
-The recipe support export feature, in this case, we got an export::
-
-  >>> cd(sample_buildout)
-  >>> write('buildout.cfg','''
-  ... [buildout]
-  ... parts = svnpart
-  ...
-  ... [svnpart]
-  ... recipe = infrae.subversion
-  ... export = true
-  ... urls = 
-  ...    %s/my.testing/trunk my.testing
-  ... ''' % repository)
-
-Re-run buildout, and check the output::
-
-  >>> print system(buildout)
-  Uninstalling svnpart.
-  Running uninstall recipe.
-  Installing svnpart.
-  >>> ls('parts/svnpart')
-  d  my.testing
-  >>> ls('parts/svnpart/my.testing')
-  -  LICENSE
-  d  my
-  -  setup.py
-
-(There is no ``.svn`` directory in the parts).
-
-If I delete the directory, it's recreated::
-
-  >>> rmdir('parts/svnpart/my.testing')
-  >>> print system(buildout)
-  Updating svnpart.
-  -------- WARNING --------
-  Directory /.../sample-buildout/parts/svnpart/my.testing have been removed.
-  Changes might be lost.
-  -------- WARNING --------
-  >>> ls('parts/svnpart')
-  d  my.testing
-  >>> ls('parts/svnpart/my.testing')
-  -  LICENSE
-  d  my
-  -  setup.py
-
 
 Bad SSL certificate
 -------------------
