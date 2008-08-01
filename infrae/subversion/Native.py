@@ -55,7 +55,7 @@ class Recipe(BaseRecipe):
         super(Recipe, self)._updateRevisionInformation(link, revision.number)
 
 
-    def _updatePath(self, path):
+    def _updatePath(self, link, path):
         """Update a single path.
         """
         self.client.update(path)

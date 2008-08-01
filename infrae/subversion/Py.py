@@ -27,7 +27,7 @@ class Recipe(BaseRecipe):
         super(Recipe, self)._updateRevisionInformation(link, revision)
 
 
-    def _updatePath(self, path):
+    def _updatePath(self, link, path):
         """Update a single path.
         """
         wc = py.path.svnwc(path)

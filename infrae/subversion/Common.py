@@ -2,6 +2,7 @@
 # $Id$
 
 import os.path
+import re
 
 def checkExistPath(path):
     """Check that a path exist.
@@ -56,9 +57,10 @@ class BaseRecipe(object):
 
         Options can only contains strings.
         """
-        self.options['updated'] = '\n'.join(self.updated)
-        str_revisions = ['%s %s' % r for r in self.revisions.items() if r[1]]
-        self.options['revisions'] = '\n'.join(str_revisions)
+        if self.options.get('export_info', False):
+            self.options['updated'] = '\n'.join(self.updated)
+            str_revisions = ['%s %s' % r for r in self.revisions.items() if r[1]]
+            self.options['revisions'] = '\n'.join(str_revisions)
 
 
     def _updateAllRevisionInformation(self):
@@ -78,7 +80,7 @@ class BaseRecipe(object):
             self.updated.append(link)
 
 
-    def _updatePath(self, path):
+    def _updatePath(self, link, path):
         """Update a single path.
         """
         raise NotImplementedError
@@ -112,7 +114,7 @@ class BaseRecipe(object):
 
             if self.verbose:
                 print "Updating %s" % path
-            self._updatePath(path)
+            self._updatePath(link, path)
             
         self._exportInformationToOptions()
         return self.location
