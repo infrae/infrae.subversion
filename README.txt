@@ -68,9 +68,9 @@ Two variables will be exported by this recipe:
 - ``updated`` which gives a list of URLs which have been updated with
   new code.
 
-Sinces values to these variables changes each time you run buildout
-(revision number changes), this can trigger an uninstall/reinstall of
-the part. We recommand to activate it only if you need.
+Since values to these variables changes each time you run buildout
+(revision number changes), this trigger an uninstall/reinstall of the
+part. We recommand to activate it only if you need it.
 
 Sample
 ------
