@@ -53,13 +53,26 @@ instance). To prevent this step, you can use this option::
 
   ignore_verification = true
 
+Exported Variables
+------------------
+
+Two variables are exported by this recipe:
+
+- ``revisions`` which gives for each URL the corresponding revision
+  number,
+
+- ``updated`` which gives a list of URLs which have been updated with
+  new code.
+
 Sample
 ------
 
 For an example buildout that uses this recipe, please see the `Silva
 buildout <https://svn.infrae.com/buildout/silva/trunk>`_.
 
-As well, the `doctest file <https://svn.infrae.com/buildout/infrae.subversion/trunk/infrae/subversion/tests/IMPL.txt>`_ can provide more sample.
+As well, the `doctest file
+<https://svn.infrae.com/buildout/infrae.subversion/trunk/infrae/subversion/tests/IMPL.txt>`_
+can provide more sample.
 
 Latest version
 --------------
