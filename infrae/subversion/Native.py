@@ -7,7 +7,7 @@ import pysvn
 from Common import BaseRecipe, checkExistPath, prepareURLs
 
 from sets import Set            # For python 2.3 compatibility
-import os, os.path
+import os
 import re
 
 def createSVNClient(recipe):

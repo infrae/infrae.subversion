@@ -1,7 +1,7 @@
 # Copyright (c) 2007-2008 Infrae. All rights reserved.
 # $Id$
 
-import os, sys, re
+import os
 from sets import Set            # For python 2.3 compatibility
 
 from Common import BaseRecipe, checkExistPath, prepareURLs
