@@ -1,13 +1,14 @@
 # Copyright (c) 2007-2008 Infrae. All rights reserved.
 # $Id$
 
-from pysvn import wc_status_kind
+from pysvn import wc_status_kind, opt_revision_kind, wc_notify_action
 import pysvn
 
+from sets import Set            # For python 2.3 compatibility
 import os, os.path
 import re
 
-def createSVNClient():
+def createSVNClient(recipe):
     """Create a pysvn client, and setup some callback and options.
     """
 
@@ -18,10 +19,16 @@ def createSVNClient():
         print "-------- SECURITY WARNING --------"
         return True, 0, False
 
+    def callback_notify(info):
+        if info['action'] == wc_notify_action.update_completed:
+            path = info['path']
+            recipe._updateRevisionInformation(path, recipe.urls[path], info['revision'])
+
     client = pysvn.Client()
     client.set_interactive(True)
     client.callback_ssl_server_trust_prompt = callback_ssl
-
+    if not (recipe is None):
+        client.callback_notify = callback_notify
     return client
 
 
@@ -37,7 +44,19 @@ def checkExistPath(path):
     return status
 
 
-class Recipe:
+def prepareURLs(location, urls):
+    """Given a list of urls/path, and a location, prepare a list of
+    tuple with url, full path.
+    """
+
+    def prepareEntry(line):
+        link, path = line.split()
+        return os.path.join(location, path), link
+
+    return dict([prepareEntry(l) for l in urls.splitlines() if l.strip()])
+
+
+class Recipe(object):
     """infrae.subversion recipe.
     """
 
@@ -48,9 +67,9 @@ class Recipe:
         
         options['location'] = self.location = os.path.join(
             buildout['buildout']['parts-directory'], self.name)
-        self.urls = [l.split()
-                     for l in options['urls'].splitlines()
-                     if l.strip()]
+        self.revisions = {} # Store revision information for each link
+        self.updated = []   # Store updated links
+        self.urls = prepareURLs(self.location, options['urls'])
         self.export = options.get('export')
         self.newest = (
             buildout['buildout'].get('offline', 'false') == 'false'
@@ -58,8 +77,44 @@ class Recipe:
             buildout['buildout'].get('newest', 'true') == 'true'
             )
 
-        self.client = createSVNClient()
+        self.client = createSVNClient(self)
         self.verbose = buildout['buildout'].get('verbosity', 0)
+        self._updateAllRevisionInformation()
+        self._exportInformationToOptions()
+
+
+    def _exportInformationToOptions(self):
+        """Export revision and changed information to options.
+
+        Options can only contains strings.
+        """
+        self.options['updated'] = '\n'.join(self.updated)
+        str_revisions = ['%s %s' % r for r in self.revisions.items() if r[1]]
+        self.options['revisions'] = '\n'.join(str_revisions)
+
+
+    def _updateAllRevisionInformation(self):
+        """Update all revision information for defined urls.
+        """
+        for path, link in self.urls.items():
+            if os.path.exists(path):
+                self._updateRevisionInformation(link, path)
+
+
+    def _updateRevisionInformation(self, link, path, revision=None):
+        """Update revision information on a path.
+        """
+        if revision is None:
+            info = self.client.info(path)
+            revision = info['revision']
+
+        assert (revision.kind == opt_revision_kind.number)
+
+        old_revision = self.revisions.get(link, None)
+        self.revisions[link] = revision.number
+        if not (old_revision is None):
+            self.updated.append(link)
+
 
     def update(self):
         """Update the checkouts.
@@ -72,8 +127,7 @@ class Recipe:
         ignore = self.options.get('ignore_updates', False) or self.export
 
         num_release = re.compile('.*@[0-9]+$')
-        for link, sub_path in self.urls:
-            path = os.path.join(self.location, sub_path)
+        for path, link in self.urls.items():
             if not checkExistPath(path):
                 if self.verbose:
                     print "Entry %s deleted, checkout a new version ..." % link
@@ -92,6 +146,7 @@ class Recipe:
                 print "Updating %s" % path
             self.client.update(path)
             
+        self._exportInformationToOptions()
         return self.location
 
     def _parseRevisionInUrl(self, url):
@@ -102,9 +157,9 @@ class Recipe:
         match = num_release.match(url)
         if match:
             return (match.group(1),
-                    pysvn.Revision(pysvn.opt_revision_kind.number,
+                    pysvn.Revision(opt_revision_kind.number,
                                    int(match.group(2))))
-        return (url, pysvn.Revision(pysvn.opt_revision_kind.head))
+        return (url, pysvn.Revision(opt_revision_kind.head))
 
 
     def _installPath(self, link, path):
@@ -114,11 +169,12 @@ class Recipe:
             print "%s %s to %s" % (self.export and 'Export' or 'Fetch',
                                    link, path)
             
-        link, revision = self._parseRevisionInUrl(link)
+        link, wanted_revision = self._parseRevisionInUrl(link)
         if self.export:
-            self.client.export(link, path, revision=revision, recurse=True)
+            method = self.client.export
         else:
-            self.client.checkout(link, path, revision=revision, recurse=True)
+            method = self.client.checkout
+        method(link, path, revision=wanted_revision, recurse=True)
 
 
     def install(self):
@@ -127,11 +183,12 @@ class Recipe:
         Fails if buildout is running in offline mode.
         """
 
-        for link, sub_path in self.urls:
-            path = os.path.join(self.location, sub_path)
+        for path, link in self.urls.items():
             self._installPath(link, path)
 
+        self._exportInformationToOptions()
         return self.location
+
 
 def uninstall(name, options):
     r"""
@@ -154,8 +211,8 @@ def uninstall(name, options):
     #     options['buildout'] available so no
     #     'buildout:parts-directory'.
     location = options.get('location', os.path.join('.', 'parts', name))
-    
-    client = createSVNClient()
+    urls = prepareURLs(location, options['urls'])
+    client = createSVNClient(None)
 
     bad_svn_status = [wc_status_kind.modified, 
                       wc_status_kind.missing,
@@ -164,8 +221,14 @@ def uninstall(name, options):
     if not checkExistPath(location):
         return
 
-    for sub_path in os.listdir(location):
-        path = os.path.join(location, sub_path)
+    current_paths = Set([os.path.join(location, s) for s in os.listdir(location)])
+    recipe_paths = Set(urls.keys())
+    added_paths = current_paths.difference(recipe_paths)
+    if added_paths:
+        msg = "New path have been added to the location: %s."
+        raise ValueError(msg, ', '.join(added_paths))
+
+    for path in urls.keys():
         if not checkExistPath(path):
             continue
 

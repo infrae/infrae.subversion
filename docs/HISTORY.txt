@@ -1,6 +1,24 @@
 Changes
 -------
 
+1.2
+~~~
+
+- Uninstall only look at directory which have been created by the
+  recipe in the part. Other are just reported.
+
+- Export two new variables: 
+ 
+  ``revisions``
+  
+     Which is lines formatted::
+
+        link revision
+
+  ``updated``
+
+     Which is lines containing updated links. 
+
 1.1
 ~~~
 
