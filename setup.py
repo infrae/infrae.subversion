@@ -8,13 +8,13 @@ name = "infrae.subversion"
 
 setup(
     name = name,
-    version="1.2",
+    version="1.3",
     author="Eric Casteleijn, Guido Wesdorp, Daniel Nouri and Sylvain Viollon",
     author_email="info@infrae.com",
     description="Buildout recipe for checking out from subversion",
     long_description=open('README.txt').read() + \
         open(os.path.join('docs', 'HISTORY.txt')).read(),
-    url="https://svn.infrae.com/buildout/infrae.buildout/trunk/",
+    url="https://svn.infrae.com/buildout/infrae.subversion/trunk/",
     license="ZPL 2.1",
     keywords="subversion buildout",
     classifiers=[
