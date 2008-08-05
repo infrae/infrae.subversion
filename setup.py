@@ -6,6 +6,13 @@ import os
 
 name = "infrae.subversion"
 
+tests_require = ['setuptools',
+                 'zc.buildout',
+                 'zope.testing',
+                 'svnhelper',
+                 'py == 0.9.0',
+                 ],
+
 setup(
     name = name,
     version="1.3",
@@ -25,15 +32,12 @@ setup(
     packages=find_packages(),
     namespace_packages = ['infrae'],
     test_suite = 'infrae.subversion.tests.test_impl.test_suite',
-    tests_require = ['svnhelper', 
-                     'zc.buildout', 
-                     'zope.testing', 
-                     'setuptools', 
-                     'py == 0.9.0',],
+    tests_require = tests_require,
     install_requires = [
         'zc.buildout', 
         'setuptools', 
         'py == 0.9.0'],
+    extras_require = {'test': tests_require},
     entry_points = {
         'zc.buildout': ['default = %s:Recipe' % name],
         'zc.buildout.uninstall': ['default = %s:uninstall' % name]},
