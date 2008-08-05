@@ -10,6 +10,7 @@ import doctest
 import os, sys
 import os.path
 
+import py
 import infrae.subversion
 import zc.buildout.testing
 import svnhelper.testing
@@ -23,6 +24,7 @@ def setUp(test):
     tested_package = os.path.dirname(infrae.subversion.__file__)
 
     zc.buildout.testing.buildoutSetUp(test)
+    zc.buildout.testing.install('py', test)
     zc.buildout.testing.install_develop('infrae.subversion', test)
     svnhelper.testing.setUpRepository(test)
     test.globs['init_test_package'](test_package)
