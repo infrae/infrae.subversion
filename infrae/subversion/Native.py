@@ -122,7 +122,7 @@ def uninstall(name, options):
     added_paths = current_paths.difference(recipe_paths)
     if added_paths:
         msg = "New path have been added to the location: %s."
-        raise ValueError(msg, ', '.join(added_paths))
+        raise ValueError(msg % ', '.join(added_paths))
 
     for path in urls.keys():
         if not checkExistPath(path):
