@@ -39,6 +39,8 @@ class Recipe(BaseRecipe):
 
     def __init__(self, buildout, name, options):
         super(Recipe, self).__init__(buildout, name, options)
+        if self.verbose:
+            print 'Using pysvn implementation.'
         self.client = createSVNClient(self)
         self._updateAllRevisionInformation()
         self._exportInformationToOptions()
