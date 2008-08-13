@@ -24,7 +24,9 @@ def createSVNClient(recipe):
     def callback_notify(info):
         if info['action'] == wc_notify_action.update_completed:
             path = info['path']
-            recipe._updateRevisionInformation(path, recipe.urls[path], info['revision'])
+            url = recipe.urls.get(path, None)
+            if not (url is None):
+                recipe._updateRevisionInformation(path, url, info['revision'])
 
     client = pysvn.Client()
     client.set_interactive(True)
