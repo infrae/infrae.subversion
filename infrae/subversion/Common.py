@@ -60,7 +60,7 @@ class BaseRecipe(object):
         if self.options.get('export_info', False):
             self.options['updated'] = '\n'.join(self.updated)
             str_revisions = ['%s %s' % r for r in self.revisions.items() if r[1]]
-            self.options['revisions'] = '\n'.join(str_revisions)
+            self.options['revisions'] = '\n'.join(sorted(str_revisions))
 
 
     def _updateAllRevisionInformation(self):

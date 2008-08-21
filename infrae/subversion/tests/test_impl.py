@@ -38,7 +38,7 @@ def tearDown(test):
     zc.buildout.testing.buildoutTearDown(test)
 
 flags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE |
-         doctest.REPORT_ONLY_FIRST_FAILURE)
+         doctest.REPORT_ONLY_FIRST_FAILURE | doctest.REPORT_NDIFF)
 
 def have_pysvn():
     impl = os.getenv('INFRAE_SUBVERSION_IMPL', 'PYSVN')

@@ -204,6 +204,85 @@ We're going to create a revision:
   TODO
    
 
+Exporting revision information via the options
+----------------------------------------------
+
+Recipes for other parts of the buildout may be interested in whether a
+particular checkout was updated during the current buildout run. Therefore
+infrae.subversion exports the current revision numbers of all its checkouts to
+an option whose values after the __init__ and update phases other recipes can
+compare.
+
+To demonstrate this, we create a test recipe and a buildout using both
+infrae.subversion and the test recipe:
+
+  >>> mkdir('recipe')
+  >>> mkdir('recipe/test_export')
+  >>> write('recipe/test_export/__init__.py', '''
+  ... class TestExport(object):
+  ...     def __init__(self, buildout, name, options):
+  ...         self.buildout = buildout
+  ...         print '__init__ phase: ', buildout['svnpart']['revisions']
+  ...     def install(self):
+  ...         print 'install phase: ', self.buildout['svnpart']['revisions']
+  ...         return []
+  ...     def update(self):
+  ...         print 'update phase: ', self.buildout['svnpart']['revisions']
+  ...         return []
+  ... ''')
+
+  >>> write('recipe/setup.py', '''
+  ... from setuptools import setup, find_packages
+  ... setup(name='test_export', version='dev',
+  ...       packages=find_packages(),
+  ...       entry_points={'zc.buildout': ['default=test_export:TestExport']})
+  ... ''')
+
+  >>> write('buildout.cfg', '''
+  ... [buildout]
+  ... develop = recipe
+  ... parts = svnpart testexport
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... urls =
+  ...    %s/my.testing/trunk my.testing
+  ...    %s/infrae.subversion/trunk infrae.subversion
+  ... export_info = true
+  ...
+  ... [testexport]
+  ... recipe = test_export
+  ... ''' % (repository, repository))
+
+When running this buildout for the first time, the test recipe sees how
+revisions for the two URLs get checked out:
+
+  >>> rmdir('parts/svnpart')
+  >>> print system(buildout)
+  Develop: '.../sample-buildout/recipe'
+  __init__ phase:
+  Uninstalling svnpart.
+  ...
+  Installing svnpart.
+  Installing testexport.
+  install phase:  file:///.../test_repos/infrae.subversion/trunk 2
+                  file:///.../test_repos/my.testing/trunk 2
+
+Running the buildout again immediately, the test recipe will see that the
+current revisions are the same before and after the update:
+
+  >>> print system(buildout)
+  Develop: '.../sample-buildout/recipe'
+  __init__ phase:  file:///.../test_repos/infrae.subversion/trunk 2
+                   file:///.../test_repos/my.testing/trunk 2
+  Uninstalling svnpart.
+  Running uninstall recipe.
+  Installing svnpart.
+  Updating testexport.
+  update phase:  file:///.../test_repos/infrae.subversion/trunk 2
+                 file:///.../test_repos/my.testing/trunk 2
+
+
 Bad SSL certificate
 -------------------
 
