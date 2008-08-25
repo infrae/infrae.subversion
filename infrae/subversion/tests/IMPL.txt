@@ -76,7 +76,6 @@ And re-run buildout, you will get an error because of this file:
   An internal error occured due to a bug in either zc.buildout or in a
   recipe being used:
   <BLANKLINE>
-  Traceback (most recent call last): ...
   ValueError:
   In '/.../sample-buildout/parts/svnpart/my.testing':
   local modifications detected while uninstalling 'svnpart': Uninstall aborted!
@@ -111,7 +110,6 @@ And, if you edit a file, you get the same error::
   An internal error occured due to a bug in either zc.buildout or in a
   recipe being used:
   <BLANKLINE>
-  Traceback (most recent call last): ...
   ValueError:
   In '/.../sample-buildout/parts/svnpart/my.testing':
   local modifications detected while uninstalling 'svnpart': Uninstall aborted!

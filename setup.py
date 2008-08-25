@@ -10,7 +10,7 @@ tests_require = ['setuptools',
                  'zc.buildout',
                  'zope.testing',
                  'svnhelper',
-                 'py == 0.9.0',
+                 'py',
                  ],
 
 setup(
@@ -36,7 +36,7 @@ setup(
     install_requires = [
         'zc.buildout', 
         'setuptools', 
-        'py == 0.9.0'],
+        'py'],
     extras_require = {'test': tests_require},
     entry_points = {
         'zc.buildout': ['default = %s:Recipe' % name],
