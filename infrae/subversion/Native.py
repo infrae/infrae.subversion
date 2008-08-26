@@ -44,7 +44,8 @@ class Recipe(BaseRecipe):
         if self.verbose:
             print 'Using pysvn implementation.'
         self.client = createSVNClient(self)
-        self._updateAllRevisionInformation()
+        if not self.export:
+            self._updateAllRevisionInformation()
         self._exportInformationToOptions()
 
 
@@ -52,6 +53,8 @@ class Recipe(BaseRecipe):
         """Update revision information on a path.
         """
         if revision is None:
+            if self.export:
+                return
             info = self.client.info(path)
             revision = info['revision']
 
