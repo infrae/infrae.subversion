@@ -15,7 +15,7 @@ tests_require = ['setuptools',
 
 setup(
     name = name,
-    version="1.4",
+    version="1.3.1",
     author="Eric Casteleijn, Guido Wesdorp, Daniel Nouri and Sylvain Viollon",
     author_email="info@infrae.com",
     description="Buildout recipe for checking out from subversion",

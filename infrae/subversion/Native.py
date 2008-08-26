@@ -26,7 +26,7 @@ def createSVNClient(recipe):
             path = info['path']
             url = recipe.urls.get(path, None)
             if not (url is None):
-                recipe._updateRevisionInformation(path, url, info['revision'])
+                recipe._updateRevisionInformation(url, path, info['revision'])
 
     client = pysvn.Client()
     client.set_interactive(True)
