@@ -1,8 +1,11 @@
 # Copyright (c) 2007-2008 Infrae. All rights reserved.
 # $Id$
 
+from sets import Set            # For python 2.3 compatibility
 import os.path
+import os
 import re
+
 
 import zc.buildout
 
@@ -17,6 +20,20 @@ def checkExistPath(path):
         print "Changes might be lost."
         print "-------- WARNING --------"
     return status
+
+
+def checkAddedPaths(location, urls):
+    """Check that no path have been added to that location.
+    """
+    current_paths = Set([os.path.join(location, s) for s in
+                         os.listdir(location)])
+    recipe_paths = Set(urls.keys())
+    added_paths = current_paths.difference(recipe_paths)
+    if '.svn' in added_paths:
+        added_paths.remove('.svn')
+    if added_paths:
+        msg = "New path have been added to the location: %s."
+        raise ValueError(msg % ', '.join(added_paths))
 
 
 def prepareURLs(location, urls):

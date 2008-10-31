@@ -2,11 +2,10 @@
 # $Id$
 
 import os
-from sets import Set            # For python 2.3 compatibility
-
 import py
 
-from Common import BaseRecipe, checkExistPath, prepareURLs
+from Common import BaseRecipe, prepareURLs
+from Common import checkAddedPaths, checkExistPath
 
 
 class Recipe(BaseRecipe):
@@ -76,14 +75,7 @@ def uninstall(name, options):
     if not checkExistPath(location):
         return
 
-    current_paths = Set([os.path.join(location, s) for s in
-                         os.listdir(location)])
-    recipe_paths = Set(urls.keys())
-    added_paths = current_paths.difference(recipe_paths)
-    if added_paths:
-        msg = "New path have been added to the location: %s."
-        raise ValueError(msg % ', '.join(added_paths))
-
+    checkAddedPaths(location, urls)
 
     for path in urls.keys():
         if not checkExistPath(path):

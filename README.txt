@@ -63,7 +63,7 @@ instance). To prevent this step, you can use this option::
 Eggs
 ----
 
-If you set the option ``as_egg`` in your configuration file,
+If you set the option ``as_eggs`` in your configuration file,
 checkouted URLs will be registered as development eggs in your
 buildout. This only work for non-recipe development eggs.
 

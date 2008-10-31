@@ -1,10 +1,15 @@
 Changes
 -------
 
-1.5 (unreleased)
-~~~~~~~~~~~~~~~~
+1.4.1 (2008-10-31)
+~~~~~~~~~~~~~~~~~~
 
-- ...
+Bug fix:
+
+- Correct typo in README.txt. [sylvain]
+
+- Ignore ``.svn`` directory when checking for new one at
+  uninstall. [sylvain]
 
 1.4 (2008-10-31)
 ~~~~~~~~~~~~~~~~
