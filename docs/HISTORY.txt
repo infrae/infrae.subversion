@@ -8,7 +8,7 @@ Bug fix:
 
 - Correct typo in README.txt. [sylvain]
 
-- Ignore ``.svn`` directory when checking for new one at
+- Ignore ``.svn`` directory when checking for added ones at
   uninstall. [sylvain]
 
 1.4 (2008-10-31)
