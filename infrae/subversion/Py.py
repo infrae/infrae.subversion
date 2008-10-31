@@ -4,9 +4,10 @@
 import os
 from sets import Set            # For python 2.3 compatibility
 
+import py
+
 from Common import BaseRecipe, checkExistPath, prepareURLs
 
-import py
 
 class Recipe(BaseRecipe):
     """infrae.subversion recipe.
@@ -16,7 +17,10 @@ class Recipe(BaseRecipe):
         super(Recipe, self).__init__(buildout, name, options)
         if self.verbose:
             print 'Using py implementation.'
-        self._updateAllRevisionInformation()
+        if not self.offline:    # Py is not able to do svn status
+                                # without asking something on a
+                                # server.
+            self._updateAllRevisionInformation()
         self._exportInformationToOptions()
 
     def _updateRevisionInformation(self, link, path):
@@ -24,10 +28,9 @@ class Recipe(BaseRecipe):
         """
         if isinstance(path, str):
             path = py.path.svnwc(path)
-            
+
         revision = path.status().rev
         super(Recipe, self)._updateRevisionInformation(link, revision)
-
 
     def _updatePath(self, link, path):
         """Update a single path.
@@ -35,7 +38,6 @@ class Recipe(BaseRecipe):
         wc = py.path.svnwc(path)
         wc.update()
         self._updateRevisionInformation(link, wc)
-
 
     def _installPath(self, link, path):
         """Checkout a single entry.
@@ -59,7 +61,7 @@ def uninstall(name, options):
     """
     if bool(options.get('export', False)):
         return                  # SVN Export, there is nothing to check.
-                         
+
     if bool(options.get('ignore_verification', False)):
         return                  # Verification disabled.
 
@@ -74,13 +76,14 @@ def uninstall(name, options):
     if not checkExistPath(location):
         return
 
-    current_paths = Set([os.path.join(location, s) for s in os.listdir(location)])
+    current_paths = Set([os.path.join(location, s) for s in
+                         os.listdir(location)])
     recipe_paths = Set(urls.keys())
     added_paths = current_paths.difference(recipe_paths)
     if added_paths:
         msg = "New path have been added to the location: %s."
         raise ValueError(msg % ', '.join(added_paths))
-    
+
 
     for path in urls.keys():
         if not checkExistPath(path):

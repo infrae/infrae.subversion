@@ -4,18 +4,20 @@ __author__ = "sylvain@infrae.com"
 __format__ = "plaintext"
 __version__ = "$Id$"
 
+import doctest
+import os
+import os.path
+import sys
 import unittest
 from doctest import DocFileSuite
-import doctest
-import os, sys
-import os.path
 
 import py
-import infrae.subversion
-import zc.buildout.testing
 import svnhelper.testing
 import svnhelper.tests
+import zc.buildout.testing
 from svnhelper.core import helper
+
+import infrae.subversion
 
 
 def setUp(test):

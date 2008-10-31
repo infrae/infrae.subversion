@@ -10,12 +10,19 @@ This is an example buildout part that uses this recipe::
 
     [development-products]
     recipe = infrae.subversion
-    urls = 
+    urls =
         https://svn.plone.org/svn/collective/PDBDebugMode/trunk PDBDebugMode
 
 This will maintain a working copy of ``PDBDebugMode`` in the
 ``parts/development-products/PDBDebugMode`` directory (*not* in the
 parts directory itself).  Thus, the recipe handles multiple URLs fine.
+
+You can select a different location with ``location``, for instance::
+
+   location = src
+
+Will extract ``PDBDebugMode`` in ``src/PDBDebugMode`` instead of
+``parts``.
 
 If you have ``pysvn`` installed on the computer, it will be used. This
 implies better performances.
@@ -53,6 +60,17 @@ instance). To prevent this step, you can use this option::
 
   ignore_verification = true
 
+Eggs
+----
+
+If you set the option ``as_egg`` in your configuration file,
+checkouted URLs will be registered as development eggs in your
+buildout. This only work for non-recipe development eggs.
+
+  *Pay attention*: if you add a new egg, this will trigger a new
+  uninstall-reinstall cycle. You may want to use that option to setup
+  eggs coming from SVN for production, but not for development.
+
 Exported Variables
 ------------------
 
@@ -71,6 +89,10 @@ Two variables will be exported by this recipe:
 Since values to these variables changes each time you run buildout
 (revision number changes), this trigger an uninstall/reinstall of the
 part. We recommand to activate it only if you need it.
+
+Is always exported a variable ``location`` to say where are done the
+checkouts, and a variable ``eggs`` which contains a list of
+checkouted eggs.
 
 Sample
 ------

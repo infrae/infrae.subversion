@@ -7,7 +7,14 @@ This test suite works for both implementations.
 Checking out SVN links
 ----------------------
 
-Create buildout using infrae.subversion::
+First, run buildout once with an almost empty buildout to work around possible
+test failures when there's an older buildout that first needs updating.
+
+  >>> cd(sample_buildout)
+  >>> write('buildout.cfg','[buildout]')
+  >>> dont_care = system(buildout)
+
+Create buildout that uses infrae.subversion::
 
   >>> cd(sample_buildout)
   >>> write('buildout.cfg','''
@@ -16,9 +23,10 @@ Create buildout using infrae.subversion::
   ...
   ... [svnpart]
   ... recipe = infrae.subversion
-  ... urls = 
+  ... urls =
   ...    %s/my.testing/trunk my.testing
   ... ''' % repository)
+
 
 And run buildout::
 
@@ -60,7 +68,7 @@ example, the part will be reinstalled::
   ... [svnpart]
   ... recipe = infrae.subversion
   ... ignore_verification = true
-  ... urls = 
+  ... urls =
   ...    %s/my.testing/trunk my.testing
   ...    %s/infrae.subversion/trunk infrae.subversion
   ... ''' % (repository, repository))
@@ -73,14 +81,16 @@ And re-run buildout, you will get an error because of this file:
   While:
     Installing.
     Uninstalling svnpart.
+  <BLANKLINE>
   An internal error occured due to a bug in either zc.buildout or in a
   recipe being used:
-  <BLANKLINE>
-  ValueError:
-  In '/.../sample-buildout/parts/svnpart/my.testing':
+  Traceback (most recent call last):
+    ...
+  ValueError: In '.../parts/svnpart/my.testing':
   local modifications detected while uninstalling 'svnpart': Uninstall aborted!
   <BLANKLINE>
-  Please check for local modifications and make sure these are checked in.
+  Please check for local modifications and make sure these are checked
+  in.
   <BLANKLINE>
   If you sure that these modifications can be ignored, remove the
   checkout manually:
@@ -90,7 +100,6 @@ And re-run buildout, you will get an error because of this file:
   Or if applicable, add the file to the 'svn:ignore' property of the
   file's container directory.  Alternatively, add an ignore glob pattern
   to your subversion client's 'global-ignores' configuration variable.
-
 
 You can delete it::
 
@@ -107,14 +116,16 @@ And, if you edit a file, you get the same error::
   While:
     Installing.
     Uninstalling svnpart.
+  <BLANKLINE>
   An internal error occured due to a bug in either zc.buildout or in a
   recipe being used:
-  <BLANKLINE>
-  ValueError:
-  In '/.../sample-buildout/parts/svnpart/my.testing':
+  Traceback (most recent call last):
+    ...
+  ValueError: In '.../parts/svnpart/my.testing':
   local modifications detected while uninstalling 'svnpart': Uninstall aborted!
   <BLANKLINE>
-  Please check for local modifications and make sure these are checked in.
+  Please check for local modifications and make sure these are checked
+  in.
   <BLANKLINE>
   If you sure that these modifications can be ignored, remove the
   checkout manually:
@@ -177,7 +188,7 @@ to change the configuration::
   ...
   ... [svnpart]
   ... recipe = infrae.subversion
-  ... urls = 
+  ... urls =
   ...    %s/my.testing/trunk my.testing
   ...    %s/infrae.subversion/trunk infrae.subversion
   ... ''' % (repository, repository))
@@ -197,10 +208,10 @@ Revision number
 ---------------
 
 We're going to create a revision:
-  
+
 
   TODO
-   
+
 
 Exporting revision information via the options
 ----------------------------------------------
@@ -271,8 +282,8 @@ current revisions are the same before and after the update:
 
   >>> print system(buildout)
   Develop: '.../sample-buildout/recipe'
-  __init__ phase:  file:///.../test_repos/infrae.subversion/trunk 2
-                   file:///.../test_repos/my.testing/trunk 2
+  __init__ phase: file:///.../test_repos/infrae.subversion/trunk 2
+                  file:///.../test_repos/my.testing/trunk 2
   Uninstalling svnpart.
   Running uninstall recipe.
   Installing svnpart.
@@ -289,3 +300,148 @@ good point, since you may be a victim of a spoofing attack. But that's
 boring as well, because a lot of site don't use valid certificate, and
 make fails the program useless you do a checkout in ``/tmp`` before,
 in order to accept the certificate.
+
+
+Alternative location
+--------------------
+
+First some cleanup::
+
+  >>> cd(sample_buildout)
+  >>> system('rm .installed.cfg')
+  ''
+  >>> system('rm -rf parts')
+  ''
+
+The default location is ``parts/name_of_part``, this can be changed by passing
+a location option:
+
+  >>> write('buildout.cfg','''
+  ... [buildout]
+  ... parts = svnpart
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... location = src
+  ... urls =
+  ...    %s/my.testing/trunk my.testing
+  ... ''' % repository)
+
+
+And run buildout::
+
+  >>> print system(buildout)
+  Creating directory .../sample-buildout/parts'.
+  Installing svnpart.
+  <BLANKLINE>
+  >>> ls('src')
+  d  my.testing
+  >>> ls('parts/svnpart')
+  Traceback (most recent call last):
+  ...
+  OSError: [Errno 2] No such file or directory: 'parts/svnpart'
+
+
+Development eggs
+----------------
+
+First some cleanup::
+
+  >>> cd(sample_buildout)
+  >>> system('rm .installed.cfg')
+  ''
+  >>> system('rm -rf parts')
+  ''
+
+To make the subversion checkouts available as development eggs, pass the
+``as_eggs = true`` option. For proof, we add a python interpreter that uses
+the development egg::
+
+  >>> write('buildout.cfg','''
+  ... [buildout]
+  ... parts =
+  ...     svnpart
+  ...     mypy
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... urls =
+  ...    %s/my.testing/trunk my.testing
+  ... as_eggs = true
+  ...
+  ... [mypy]
+  ... # Executable that has my.testing in the python path
+  ... recipe = zc.recipe.egg
+  ... eggs = ${svnpart:eggs}
+  ... interpreter = mypy
+  ... scripts = mypy
+  ...
+  ... ''' % repository)
+
+And run buildout::
+
+  >>> print system(buildout)
+  Creating directory '.../sample-buildout/parts'.
+  Installing svnpart.
+  Installing mypy.
+  Develop distribution: my.testing 0.1
+  uses namespace packages but the distribution does not require setuptools.
+  Generated interpreter '.../sample-buildout/bin/mypy'.
+  <BLANKLINE>
+
+The bin dir now also contains mypy and the development egg is installed::
+
+  >>> ls('bin')
+  -  buildout
+  -  mypy
+  >>> ls('develop-eggs')
+  -  infrae.subversion.egg-link
+  -  my.testing.egg-link
+  -  test-export.egg-link
+  >>> cat('bin/mypy')
+  #!...
+  sys.path[0:0] = [
+  ...parts/svnpart/my.testing',
+  ...
+
+Before doing the uninstall test, we need to clean up an egg-info directory
+from my.testing. That's something that you normally have to take care of
+handling correctly (by svn:ignore) in your checkout::
+
+  >>> system('rm -rf parts/svnpart/my.testing/my.testing.egg-info')
+  ''
+
+Uninstalling with development eggs also clears out the development eggs from
+the develop-eggs directory::
+
+  >>> write('buildout.cfg','''
+  ... [buildout]
+  ... parts =
+  ...     svnpart
+  ...     mypy
+  ...
+  ... [svnpart]
+  ... recipe = infrae.subversion
+  ... urls =
+  ... as_eggs = true
+  ...
+  ... [mypy]
+  ... # Executable that has my.testing in the python path
+  ... recipe = zc.recipe.egg
+  ... eggs = ${svnpart:eggs}
+  ... interpreter = mypy
+  ... scripts = mypy
+  ...
+  ... ''')
+  >>> print system(buildout)
+  Uninstalling mypy.
+  Uninstalling svnpart.
+  Running uninstall recipe.
+  Installing svnpart.
+  Installing mypy.
+  Generated ...bin/mypy'.
+  <BLANKLINE>
+
+  >>> ls('develop-eggs')
+  -  infrae.subversion.egg-link
+  -  test-export.egg-link

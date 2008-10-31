@@ -10,6 +10,7 @@ from sets import Set            # For python 2.3 compatibility
 import os
 import re
 
+
 def createSVNClient(recipe):
     """Create a pysvn client, and setup some callback and options.
     """
@@ -35,6 +36,7 @@ def createSVNClient(recipe):
         client.callback_notify = callback_notify
     return client
 
+
 class Recipe(BaseRecipe):
     """infrae.subversion recipe.
     """
@@ -48,7 +50,6 @@ class Recipe(BaseRecipe):
             self._updateAllRevisionInformation()
         self._exportInformationToOptions()
 
-
     def _updateRevisionInformation(self, link, path, revision=None):
         """Update revision information on a path.
         """
@@ -61,12 +62,10 @@ class Recipe(BaseRecipe):
         assert (revision.kind == opt_revision_kind.number)
         super(Recipe, self)._updateRevisionInformation(link, revision.number)
 
-
     def _updatePath(self, link, path):
         """Update a single path.
         """
         self.client.update(path)
-
 
     def _parseRevisionInUrl(self, url):
         """Parse URL to extract revision number. This is not done by
@@ -80,7 +79,6 @@ class Recipe(BaseRecipe):
                                    int(match.group(2))))
         return (url, pysvn.Revision(opt_revision_kind.head))
 
-
     def _installPath(self, link, path):
         """Checkout a single entry.
         """
@@ -90,7 +88,6 @@ class Recipe(BaseRecipe):
         else:
             method = self.client.checkout
         method(link, path, revision=wanted_revision, recurse=True)
-
 
 
 def uninstall(name, options):
@@ -117,14 +114,15 @@ def uninstall(name, options):
     urls = prepareURLs(location, options['urls'])
     client = createSVNClient(None)
 
-    bad_svn_status = [wc_status_kind.modified, 
+    bad_svn_status = [wc_status_kind.modified,
                       wc_status_kind.missing,
                       wc_status_kind.unversioned, ]
 
     if not checkExistPath(location):
         return
 
-    current_paths = Set([os.path.join(location, s) for s in os.listdir(location)])
+    current_paths = Set([os.path.join(location, s) for s in
+                         os.listdir(location)])
     recipe_paths = Set(urls.keys())
     added_paths = current_paths.difference(recipe_paths)
     if added_paths:
@@ -135,7 +133,7 @@ def uninstall(name, options):
         if not checkExistPath(path):
             continue
 
-        badfiles = filter(lambda e: e['text_status'] in bad_svn_status, 
+        badfiles = filter(lambda e: e['text_status'] in bad_svn_status,
                           client.status(path))
         if badfiles:
             raise ValueError("""\
@@ -155,5 +153,3 @@ file's container directory.  Alternatively, add an ignore glob pattern
 to your subversion client's 'global-ignores' configuration variable.
 """ % (path, name, """
   rm -rf """.join([file['path'] for file in badfiles])))
-
-
