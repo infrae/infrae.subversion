@@ -1,6 +1,15 @@
 Changes
 -------
 
+1.4.2 (unreleased)
+~~~~~~~~~~~~~~~~~~
+
+- Automatically ignore ``.pyc`` and ``.pyo`` files while checking for
+  modified files. [sylvain]
+
+- Fix bug so ``.svn`` directory is really ignored when checking for
+  added paths in the checkout directory. [sylvain]
+
 1.4.1 (2008-10-31)
 ~~~~~~~~~~~~~~~~~~
 

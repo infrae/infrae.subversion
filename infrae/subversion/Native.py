@@ -5,7 +5,7 @@ from pysvn import wc_status_kind, opt_revision_kind, wc_notify_action
 import pysvn
 
 from Common import BaseRecipe, prepareURLs
-from Common import checkAddedPaths, checkExistPath
+from Common import checkAddedPaths, checkExistPath, reportInvalidFiles
 
 import os
 import re
@@ -129,21 +129,4 @@ def uninstall(name, options):
 
         badfiles = filter(lambda e: e['text_status'] in bad_svn_status,
                           client.status(path))
-        if badfiles:
-            raise ValueError("""\
-In '%s':
-local modifications detected while uninstalling %r: Uninstall aborted!
-
-Please check for local modifications and make sure these are checked
-in.
-
-If you sure that these modifications can be ignored, remove the
-checkout manually:
-
-  rm -rf %s
-
-Or if applicable, add the file to the 'svn:ignore' property of the
-file's container directory.  Alternatively, add an ignore glob pattern
-to your subversion client's 'global-ignores' configuration variable.
-""" % (path, name, """
-  rm -rf """.join([file['path'] for file in badfiles])))
+        reportInvalidFiles(path, name, [file['path'] for file in badfiles])

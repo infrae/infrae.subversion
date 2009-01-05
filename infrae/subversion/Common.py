@@ -10,6 +10,41 @@ import re
 import zc.buildout
 
 
+def ignoredFile(file):
+    """Return true if the file should be ignored while checking for
+    added/changed/modified files.
+    """
+    for suffix in ['.pyc', '.pyo', '.egg-info']:
+        if file.endswith(suffix):
+            return True
+    return False
+
+
+def reportInvalidFiles(path, name, badfiles):
+    """Report invalid files.
+    """
+    badfiles = [file for file in badfiles if not ignoredFile(file)]
+    if not badfiles:
+        return
+    raise ValueError("""\
+In '%s':
+local modifications detected while uninstalling %r: Uninstall aborted!
+
+Please check for local modifications and make sure these are checked
+in.
+
+If you sure that these modifications can be ignored, remove the
+checkout manually:
+
+  rm -rf %s
+
+Or if applicable, add the file to the 'svn:ignore' property of the
+file's container directory.  Alternatively, add an ignore glob pattern
+to your subversion client's 'global-ignores' configuration variable.
+""" % (path, name, """
+  rm -rf """.join(badfiles)))
+
+
 def checkExistPath(path):
     """Check that a path exist.
     """
@@ -29,8 +64,9 @@ def checkAddedPaths(location, urls):
                          os.listdir(location)])
     recipe_paths = Set(urls.keys())
     added_paths = current_paths.difference(recipe_paths)
-    if '.svn' in added_paths:
-        added_paths.remove('.svn')
+    for path in added_paths:
+        if path.endswith('.svn'):
+            added_paths.remove(path)
     if added_paths:
         msg = "New path have been added to the location: %s."
         raise ValueError(msg % ', '.join(added_paths))

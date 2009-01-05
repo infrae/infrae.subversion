@@ -5,7 +5,7 @@ import os
 import py
 
 from Common import BaseRecipe, prepareURLs
-from Common import checkAddedPaths, checkExistPath
+from Common import checkAddedPaths, checkExistPath, reportInvalidFiles
 
 
 class Recipe(BaseRecipe):
@@ -84,21 +84,4 @@ def uninstall(name, options):
         wc = py.path.svnwc(path)
         status = wc.status(rec=1)
         badfiles = [] + status.modified + status.incomplete + status.unknown
-        if badfiles:
-            raise ValueError("""\
-In '%s':
-local modifications detected while uninstalling %r: Uninstall aborted!
-
-Please check for local modifications and make sure these are checked
-in.
-
-If you sure that these modifications can be ignored, remove the
-checkout manually:
-
-  rm -rf %s
-
-Or if applicable, add the file to the 'svn:ignore' property of the
-file's container directory.  Alternatively, add an ignore glob pattern
-to your subversion client's 'global-ignores' configuration variable.
-""" % (path, name, """
-  rm -rf """.join([file.strpath for file in badfiles])))
+        reportInvalidFiles(path, name, [file.strpath for file in badfiles])

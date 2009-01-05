@@ -110,6 +110,9 @@ And, if you edit a file, you get the same error::
   >>> write('parts/svnpart/my.testing/setup.py', '''
   ... Very bad edition
   ... ''')
+  >>> write('parts/svnpart/my.testing/setup.pyc', '''
+  ... Althought, pyc files are safe
+  ... ''')
   >>> print system(buildout)
   Uninstalling svnpart.
   Running uninstall recipe.
@@ -326,7 +329,6 @@ a location option:
   ... urls =
   ...    %s/my.testing/trunk my.testing
   ... ''' % repository)
-
 
 And run buildout::
 
