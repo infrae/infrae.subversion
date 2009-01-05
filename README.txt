@@ -67,7 +67,7 @@ If you set the option ``as_eggs`` in your configuration file,
 checkouted URLs will be registered as development eggs in your
 buildout. This only work for non-recipe development eggs.
 
-  *Pay attention*: if you add a new egg, this will trigger a new
+.. warning:: If you add a new egg, this will trigger a new
   uninstall-reinstall cycle. You may want to use that option to setup
   eggs coming from SVN for production, but not for development.
 
