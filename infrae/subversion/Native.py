@@ -9,6 +9,7 @@ from Common import checkAddedPaths, checkExistPath, reportInvalidFiles
 
 import os
 import re
+import getpass
 
 
 def createSVNClient(recipe):
@@ -22,6 +23,12 @@ def createSVNClient(recipe):
         print "-------- SECURITY WARNING --------"
         return True, 0, False
 
+    def callback_login(realm, username, may_save):
+        print 'Authentication realm: ' + realm
+        user = raw_input('Username: ')
+        password = getpass.getpass('Password for ' + "'" + user + "': ")
+        return True, user, password, True
+
     def callback_notify(info):
         if info['action'] == wc_notify_action.update_completed:
             path = info['path']
@@ -32,6 +39,7 @@ def createSVNClient(recipe):
     client = pysvn.Client()
     client.set_interactive(True)
     client.callback_ssl_server_trust_prompt = callback_ssl
+    client.callback_get_login = callback_login
     if not (recipe is None):
         client.callback_notify = callback_notify
     return client

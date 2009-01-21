@@ -4,7 +4,9 @@ Changes
 1.4.3 (unreleased)
 ~~~~~~~~~~~~~~~~~~
 
-- ...
+- Add a login callback for people using PySVN. This let users
+  authenticate to an unauthorized svn. Thanks to Martin Stadler
+  (martin at siarp.de) for this fix. [sylvain]
 
 1.4.2 (2009-01-05)
 ~~~~~~~~~~~~~~~~~~
