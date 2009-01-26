@@ -63,8 +63,8 @@ def checkAddedPaths(location, urls):
     current_paths = Set([os.path.join(location, s) for s in
                          os.listdir(location)])
     recipe_paths = Set(urls.keys())
-    added_paths = current_paths.difference(recipe_paths)
-    for path in added_paths:
+    added_paths = current_paths - recipe_paths
+    for path in added_paths[:]:
         if path.endswith('.svn'):
             added_paths.remove(path)
     if added_paths:
