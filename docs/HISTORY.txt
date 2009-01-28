@@ -1,10 +1,11 @@
 Changes
 -------
 
-1.4.4 (unreleased)
+1.4.4 (2009-01-28)
 ~~~~~~~~~~~~~~~~~~
 
-- ...
+- Add a ``no_warnings`` options which remove some warnings when
+  updating a part. [sylvain]
 
 1.4.3 (2009-01-21)
 ~~~~~~~~~~~~~~~~~~

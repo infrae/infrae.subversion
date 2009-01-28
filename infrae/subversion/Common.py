@@ -45,11 +45,11 @@ to your subversion client's 'global-ignores' configuration variable.
   rm -rf """.join(badfiles)))
 
 
-def checkExistPath(path):
+def checkExistPath(path, warning=True):
     """Check that a path exist.
     """
     status = os.path.exists(path)
-    if not status:
+    if not status and warning:
         print "-------- WARNING --------"
         print "Directory %s have been removed." % os.path.abspath(path)
         print "Changes might be lost."
@@ -123,6 +123,7 @@ class BaseRecipe(object):
             buildout['buildout'].get('newest', 'true') == 'true'
             )
         self.verbose = buildout['buildout'].get('verbosity', 0)
+        self.warning = not (options.get('no_warnings', 'false') == 'true')
 
     def _exportInformationToOptions(self):
         """Export revision and changed information to options.
@@ -169,7 +170,7 @@ class BaseRecipe(object):
 
         num_release = re.compile('.*@[0-9]+$')
         for path, link in self.urls.items():
-            if not checkExistPath(path):
+            if not checkExistPath(path, warning=self.warning):
                 if self.verbose:
                     print "Entry %s deleted, checkout a new version ..." % link
                 self._installPath(link, path)

@@ -178,7 +178,6 @@ re-checkout::
   d  infrae.subversion
   d  my.testing
 
-
 We can use the ``ignore_verification`` option to prevent
 verification. Note: it have to been used when using the same
 configuration for installation, since it's this one which is used for
@@ -191,6 +190,7 @@ to change the configuration::
   ...
   ... [svnpart]
   ... recipe = infrae.subversion
+  ... no_warnings = true
   ... urls =
   ...    %s/my.testing/trunk my.testing
   ...    %s/infrae.subversion/trunk infrae.subversion
@@ -205,6 +205,21 @@ Edit a file, and re-run buildout::
   Uninstalling svnpart.
   Running uninstall recipe.
   Installing svnpart.
+
+We added ``no_warnings`` so now, if we remove something and update, it
+will be back, but the recipe will not complain::
+
+  >>> rmdir('parts/svnpart/my.testing')
+  >>> ls('parts/svnpart')
+  d  infrae.subversion
+  >>> print system(buildout)
+  Updating svnpart.
+
+But the work will still be done::
+
+  >>> ls('parts/svnpart')
+  d  infrae.subversion
+  d  my.testing
 
 
 Revision number

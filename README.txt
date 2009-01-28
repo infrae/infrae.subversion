@@ -60,6 +60,14 @@ instance). To prevent this step, you can use this option::
 
   ignore_verification = true
 
+As well, when the recipe update it can emit some warnings because a
+directory have been removed. You can suppress that warning with::
+
+  no_warnings = true
+
+The verification will still be done, and the directory will be checked
+out again to replace the missing one.
+
 Eggs
 ----
 
