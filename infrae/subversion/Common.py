@@ -167,7 +167,7 @@ class BaseRecipe(object):
         for path, link in self.urls.items():
             if not checkExistPath(path, warning=self.warning):
                 if self.verbose:
-                    print "Entry %s deleted, checkout a new version ..." % link
+                    print "Entry %s missing, checkout a new version ..." % link
                 self._installPath(link, path)
                 continue
 
