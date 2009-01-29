@@ -16,7 +16,7 @@ tests_require = ['setuptools',
 
 setup(
     name = name,
-    version='1.4.5',
+    version='1.4.6',
     author=('Eric Casteleijn, Guido Wesdorp, Daniel Nouri, Sylvain Viollon'
             ' and Reinout van Rees'),
     author_email='info@infrae.com',
