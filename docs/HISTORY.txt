@@ -1,10 +1,14 @@
 Changes
 -------
 
-1.4.5 (unreleased)
+1.4.5 (2009-01-29)
 ~~~~~~~~~~~~~~~~~~
 
-- ...
+- Fix an error when some path have been added to the checkout
+  path. [eric]
+
+- Still eggify and export information on update when running as
+  non-newest mode. [sylvain]
 
 1.4.4 (2009-01-28)
 ~~~~~~~~~~~~~~~~~~

@@ -105,8 +105,8 @@ class BaseRecipe(object):
         # location is overridable if desired.
         location = options.get('location', None)
         if location:
-            self.location = os.path.join(
-                buildout['buildout']['directory'], location)
+            self.location = os.path.abspath(os.path.join(
+                buildout['buildout']['directory'], location))
         else:
             self.location = os.path.join(
                 buildout['buildout']['parts-directory'], self.name)
@@ -158,14 +158,9 @@ class BaseRecipe(object):
         """
         raise NotImplementedError
 
-    def update(self):
+    def _updateAllPaths(self):
         """Update the checkouts.
-
-        Does nothing if buildout is in offline mode.
         """
-        if not self.newest:
-            return self.location
-
         ignore = self.options.get('ignore_updates', False) or self.export
 
         num_release = re.compile('.*@[0-9]+$')
@@ -187,6 +182,15 @@ class BaseRecipe(object):
             if self.verbose:
                 print "Updating %s" % path
             self._updatePath(link, path)
+
+    def update(self):
+        """Update the recipe.
+
+        Does not update SVN path if the buildout is in offline mode,
+        but still eggify and export information.
+        """
+        if self.newest:
+            self._updateAllPaths()
 
         if self.eggify:
             self._eggify()
@@ -211,7 +215,11 @@ class BaseRecipe(object):
         if self.eggify:
             target = self.buildout['buildout']['develop-eggs-directory']
             for path in self.urls.keys():
-                zc.buildout.easy_install.develop(path, target)
+                # If we update the recipe, and we don't have newest,
+                # and that some path have been deleted, all of them
+                # might not be there.
+                if checkExistPath(path, warning=self.warning):
+                    zc.buildout.easy_install.develop(path, target)
 
     def install(self):
         """Checkout the checkouts.

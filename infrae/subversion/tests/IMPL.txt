@@ -421,6 +421,15 @@ The bin dir now also contains mypy and the development egg is installed::
   ...parts/svnpart/my.testing',
   ...
 
+Update works:
+
+  >>> print system(buildout)
+  Updating svnpart.
+  Updating mypy.
+  Develop distribution: my.testing 0.1
+  uses namespace packages but the distribution does not require setuptools.
+  <BLANKLINE>
+
 Before doing the uninstall test, we need to clean up an egg-info directory
 from my.testing. That's something that you normally have to take care of
 handling correctly (by svn:ignore) in your checkout::
@@ -462,3 +471,4 @@ the develop-eggs directory::
   >>> ls('develop-eggs')
   -  infrae.subversion.egg-link
   -  test-export.egg-link
+
